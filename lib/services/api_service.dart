@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:jibouli/models/delivery_person.dart';
 import 'package:jibouli/models/order.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
@@ -45,7 +46,9 @@ class ApiService {
           options.headers['Content-Type'] = 'application/json';
 
           // Try the domain header that should work
-          options.headers['X-Client-Domain'] = 'https://jibouli.lvmanager.net';
+          options.headers['X-Client-Domain'] =
+              // 'https://jibouli.lvmanager.net';
+              'https://edu.jibouli.lvmanager.net';
 
           handler.next(options);
         },
@@ -172,16 +175,36 @@ class ApiService {
   }
 
   // Rest of the methods...
-  Future<Map<String, dynamic>> getDeliveryPersonInfo() async {
+  // Future<Map<String, dynamic>> getDeliveryPersonInfo() async {
+  //   try {
+  //     final response = await _dio.get('/delivery/me');
+  //     return response.data;
+  //   } catch (e) {
+  //     throw Exception('Failed to get delivery person info: $e');
+  //   }
+  // }
+
+  // Future<bool> updateAvailability(bool isAvailable) async {
+  //   try {
+  //     await _dio.post(
+  //       '/delivery/availability',
+  //       data: {'available': isAvailable},
+  //     );
+  //     return true;
+  //   } catch (e) {
+  //     throw Exception('Failed to update availability: $e');
+  //   }
+  // }
+  Future<DeliveryPerson> getDeliveryPersonInfo() async {
     try {
       final response = await _dio.get('/delivery/me');
-      return response.data;
+      return DeliveryPerson.fromJson(response.data);
     } catch (e) {
       throw Exception('Failed to get delivery person info: $e');
     }
   }
 
-  Future<bool> updateAvailability(bool isAvailable) async {
+  Future<bool> updateDriverAvailability(bool isAvailable) async {
     try {
       await _dio.post(
         '/delivery/availability',
@@ -247,6 +270,7 @@ class ApiService {
         return newOrders;
       } else {
         _previousOrders = currentOrders; // Store for future comparisons
+
         return currentOrders;
       }
     } catch (e) {
